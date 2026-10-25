@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="ht">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kaye</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F1F4F7;--card:#fff;--ink:#0E2238;--mute:#5B6B7C;--line:#DCE3EA;--blue:#12427A;--onblue:#fff;--red:#C0262D;--green:#1C7A4E;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0B141E;--card:#13212F;--ink:#E8EEF4;--mute:#93A3B3;--line:#25384A;--blue:#5B9BE0;--onblue:#0B141E;--red:#F07178;--green:#4CC38A;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0B141E;--card:#13212F;--ink:#E8EEF4;--mute:#93A3B3;--line:#25384A;--blue:#5B9BE0;--onblue:#0B141E;--red:#F07178;--green:#4CC38A;color-scheme:dark}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 Figtree,system-ui,-apple-system,"Segoe UI",sans-serif;padding-bottom:84px}
+h2{font:700 18px/1.2 "Bricolage Grotesque",Figtree,system-ui,sans-serif;margin:0 0 10px;display:flex;justify-content:space-between;gap:8px}
+.top{background:var(--blue);color:var(--onblue);padding:18px 18px 22px}
+.top>div{max-width:560px;margin:0 auto}
+.brand{font:700 18px "Bricolage Grotesque",Figtree,sans-serif;opacity:.9}
+.lbl{margin-top:14px;font-size:14px;opacity:.85}
+.big{font:700 44px/1.1 "Bricolage Grotesque",Figtree,sans-serif}
+main{max-width:560px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.tile{position:relative;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;min-height:88px;color:inherit;font:inherit;cursor:pointer}
+.tile b{display:block;padding-right:28px}
+.tile span{display:block;color:var(--mute);font-size:14px}
+.tile:disabled{opacity:.5;cursor:default}
+.badge{position:absolute;top:8px;right:8px;background:var(--blue);color:var(--onblue);border-radius:999px;min-width:26px;height:26px;display:grid;place-items:center;font:600 14px Figtree,sans-serif;font-style:normal}
+input{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 12px;width:100%;min-width:0}
+.row{display:flex;gap:8px;align-items:center}
+.col{display:flex;flex-direction:column;gap:8px}
+.btn{font:inherit;font-weight:600;border:0;border-radius:10px;padding:11px 16px;background:var(--blue);color:var(--onblue);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.sm{padding:7px 12px;font-size:14px}
+.item{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 10px;padding:10px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.mute{color:var(--mute);font-size:14px}
+.red{color:var(--red)}
+.bars{display:flex;gap:8px;align-items:flex-end;height:110px}
+.bars div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;height:100%;font-size:12px;color:var(--mute)}
+.bars i{display:block;width:100%;background:var(--blue);border-radius:6px 6px 0 0;min-height:2px}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;background:none;border:0;border-top:3px solid transparent;padding:14px 0;font:inherit;font-weight:500;color:var(--mute);cursor:pointer}
+nav button.on{color:var(--blue);border-top-color:var(--blue);font-weight:600}
+#toast{position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);max-width:90%;background:var(--ink);color:var(--bg);padding:9px 16px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s}
+#toast.show{opacity:1}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 12px;width:100%;min-width:0}
+input[type=checkbox]{width:auto}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.btn.ghost.red{color:var(--red)}
+.rc{border-style:dashed}
+@media (prefers-reduced-motion:reduce){#toast{transition:none}}
+:root{--shadow:0 1px 2px rgba(14,34,56,.06),0 6px 18px rgba(14,34,56,.06)}
+.top{padding:16px 20px 28px;border-radius:0 0 26px 26px}
+.top .bar{display:flex;align-items:center;gap:10px}
+.mark{display:grid;place-items:center;width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,.16)}
+.mark svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.brand{font-size:19px;flex:1;opacity:1}
+.dnow{font-size:13px;opacity:.8}
+.lbl{margin-top:22px;font-size:14px;opacity:.8}
+.big{font-size:46px;letter-spacing:-.02em}
+main{padding:18px 16px 8px}
+.card{border:0;box-shadow:var(--shadow);border-radius:16px;padding:16px}
+h2{font-size:17px}
+.btn{min-height:44px;border-radius:12px;padding:10px 18px;transition:transform .1s}
+.btn:active{transform:scale(.98)}
+.btn.sm{min-height:36px;padding:6px 13px;border-radius:10px}
+.btn.ghost{background:transparent;border:1.5px solid var(--line)}
+input,select,textarea{border-radius:12px;padding:12px 14px;border:1.5px solid var(--line);background:var(--card)}
+input:focus,select:focus,textarea:focus{border-color:var(--blue);outline:0;box-shadow:0 0 0 3px color-mix(in srgb,var(--blue) 25%,transparent)}
+.tile{border:0;box-shadow:var(--shadow);border-radius:16px;padding:14px;min-height:96px}
+.tile span:last-child{margin-top:6px;font-weight:600}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.stat{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:14px}
+.stat span{display:block;color:var(--mute);font-size:13px}
+.stat b{display:block;margin-top:4px;font:700 21px/1.2 "Bricolage Grotesque",Figtree,system-ui,sans-serif}
+.stat.warn b{color:var(--red)}
+.empty{text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center;padding:28px 18px}
+.rc{padding:20px}
+.rc .item{border-top:1px dashed var(--line)}
+.rc .item:first-of-type{border-top:0}
+nav{box-shadow:0 -4px 18px rgba(14,34,56,.08);border-top:0}
+nav button{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;padding:10px 0 12px;border-top:0}
+nav button.on{border-top:0}
+nav svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+:root{--bg:#fff;--card:#fff;--ink:#0B2A5B;--mute:#5E6F8A;--line:#DCE7F5;--blue:#1257D6;--onblue:#fff;--shadow:0 1px 2px rgba(18,87,214,.07),0 6px 18px rgba(18,87,214,.08)}
+.pills{display:none}
+.top.mini{padding-bottom:18px}
+.top.mini .lbl,.top.mini .big{display:none}
+.pt{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.pt h1{margin:0;font:700 22px/1.2 "Bricolage Grotesque",Figtree,system-ui,sans-serif}
+.back{width:40px;height:40px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);color:var(--blue);font-size:26px;line-height:1;cursor:pointer;padding:0 0 3px}
+.menu{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+.mi{display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 2px;background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);font:600 12px Figtree,system-ui,sans-serif;color:var(--ink);cursor:pointer}
+.ib{display:grid;place-items:center;width:42px;height:42px;border-radius:14px;background:color-mix(in srgb,var(--blue) 12%,var(--card));color:var(--blue)}
+.ib svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+:root{--bg:#EDF1F9;--teal:#0F8A7E;--gold:#E0A100}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--teal:#3CC9B8;--gold:#F2C14E}}
+:root[data-theme="dark"]{--teal:#3CC9B8;--gold:#F2C14E}
+body{padding-bottom:104px}
+.top{background:#0B2E6F;color:#fff;padding:18px 20px 30px;border-radius:0 0 30px 30px}
+.big{color:#FFC94D;font-size:50px}
+.card,.stat,.tile{border-radius:20px}
+.card h2{font-size:18px}
+.stat{padding:16px}
+.stat b{font-size:22px}
+.stat:nth-child(1){background:var(--blue);color:var(--onblue)}
+.stat:nth-child(1) span{color:inherit;opacity:.8}
+.stat:nth-child(2){background:color-mix(in srgb,var(--teal) 15%,var(--card))}
+.stat:nth-child(2) b{color:var(--teal)}
+.stat:nth-child(3){background:color-mix(in srgb,var(--gold) 20%,var(--card))}
+.stat:nth-child(3) b{color:color-mix(in srgb,var(--gold) 65%,var(--ink))}
+.stat:nth-child(4){background:color-mix(in srgb,var(--red) 13%,var(--card))}
+.bars div:last-child i{background:var(--gold)}
+.av{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;flex:none;font:700 17px "Bricolage Grotesque",Figtree,system-ui,sans-serif;font-style:normal;background:hsl(var(--h) 85% 91%);color:hsl(var(--h) 65% 30%)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .av{background:hsl(var(--h) 40% 22%);color:hsl(var(--h) 85% 78%)}}
+:root[data-theme="dark"] .av{background:hsl(var(--h) 40% 22%);color:hsl(var(--h) 85% 78%)}
+.tile .av{margin-bottom:10px}
+.who{display:flex;align-items:center;gap:12px}
+nav{left:12px;right:12px;bottom:calc(10px + env(safe-area-inset-bottom,0px));border-radius:24px;padding:6px;gap:4px}
+nav button{border-radius:18px;padding:8px 0 9px}
+nav button.on{background:var(--blue);color:var(--onblue)}
+#toast{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
+.rc{border-radius:14px 14px 0 0;margin-bottom:26px;position:relative}
+.rc::after{content:"";position:absolute;left:0;right:0;bottom:-8px;height:8px;background:linear-gradient(135deg,var(--card) 25%,transparent 25%) -8px 0,linear-gradient(225deg,var(--card) 25%,transparent 25%) -8px 0;background-size:16px 16px}
+body{padding-bottom:0}
+.hb{display:grid;place-items:center;width:36px;height:36px;border:0;border-radius:10px;background:rgba(255,255,255,.16);color:#fff;padding:0;cursor:pointer}
+.hb svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+nav{top:0;right:auto;width:min(78%,300px);background:#0F172A;color:#CBD5E1;flex-direction:column;align-items:stretch;gap:6px;padding:calc(24px + env(safe-area-inset-top,0px)) 14px calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-100%);transition:transform .25s;box-shadow:none;overflow-y:auto;z-index:40}
+body.dopen nav{transform:none}
+nav button{flex:none;flex-direction:row;justify-content:flex-start;align-items:center;gap:16px;font-size:16px;padding:14px;border-radius:14px;color:#CBD5E1;background:none;text-align:left;width:100%}
+nav button.on{background:#fff;color:#0F172A;font-weight:700}
+.dbrand{display:flex;align-items:center;gap:14px;padding:0 10px 22px;color:#fff;font-size:20px;letter-spacing:.06em;font-weight:700}
+.dlogo{display:grid;place-items:center;width:44px;height:44px;border:2px solid #fff;border-radius:12px;font-size:22px;flex:none}
+.ov{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:35;display:none}
+body.dopen .ov{display:block}
+#toast{bottom:calc(24px + env(safe-area-inset-bottom,0px))}
+@media (min-width:900px){nav{transform:none;width:280px}body{padding-left:280px}.hb,.ov{display:none!important}}
+@media (prefers-reduced-motion:reduce){nav{transition:none}}
+.avb{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;border:2px solid rgba(255,255,255,.7);background:rgba(255,255,255,.16);color:#fff;font:700 15px Figtree,sans-serif;padding:0;overflow:hidden;cursor:pointer;flex:none}
+.avb img,.dlogo img,.pi img{width:100%;height:100%;object-fit:cover;display:block}
+.who{margin-top:10px;display:flex;align-items:center;gap:8px;font-size:14px;opacity:.92}
+.pi{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.2);overflow:hidden;font-size:12px;font-weight:700;flex:none}
+.top.mini .who{display:none}
+nav .lo{margin-top:auto}
+#lg{position:fixed;inset:0;z-index:100;background:#0F172A;display:grid;place-items:center;padding:20px;overflow-y:auto}
+.lc{background:#fff;border-radius:20px;padding:24px;width:100%;max-width:380px}
+.gn{color:#15803D}
+.pft{margin-top:2px;font-size:15px;font-weight:600}
+.top.mini .pft{display:none}
+.pick{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px;color:inherit;font:inherit;cursor:pointer}
+.pick:disabled{opacity:.5;cursor:default}
+.pick b{display:block}
+.qn{width:56px;text-align:center;padding:8px 4px}
+#toast{z-index:200}
+#lk{position:fixed;inset:0;z-index:90;background:#0F172A;display:grid;place-items:center;padding:20px;overflow-y:auto}
+</style>
+</head>
+<body>
+<header class="top"><div><div class="bar"><button class="hb" id="hb" aria-label="Meni"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button><span class="brand" id="brand">Kaye</span><span class="dnow" id="dnow"></span><button class="avb" id="avb" data-act="go" data-id="profil" aria-label="Profil"></button></div><div class="lbl">Vant jodi a</div><div class="big" id="today">0 G</div><div class="pft" id="pft"></div><div class="who" id="who"></div></div></header>
+<main id="app"></main>
+<div id="toast" role="status"></div>
+<datalist id="cl"></datalist>
+<input type="file" id="pf" accept="image/*" hidden>
+<nav>
+<button data-tab="tablo"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>Tablo</button>
+<button data-tab="vant"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M3 4h2l2.4 11h11l2-8H6.2"/></svg>Vant</button>
+<button data-tab="stok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>Stok</button>
+<button data-tab="kliyan"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.5-3.5 3.2-5.5 6.5-5.5s6 2 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2 .7 3.2 2.5 3.5 5.2"/></svg>Kliyan</button>
+<button data-tab="profil"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c.6-4 3.8-6 8-6s7.4 2 8 6"/></svg>Profil</button>
+</nav>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>Math.round(n).toLocaleString('fr-FR')+' '+(S.settings.cur||'G');
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const K='kaye-v1';
+const mk=()=>({products:[],sales:[],debts:[],clients:[],profile:{name:'',shop:'',phone:'',addr:'',photo:''},auth:{email:'',in:false},settings:{cur:'G',low:3,foot:'Mèsi, a pwochen!',theme:'auto'}});
+function norm(o){o=o&&typeof o==='object'?o:{};const r=Object.assign(mk(),o);r.profile=Object.assign(mk().profile,o.profile);r.settings=Object.assign(mk().settings,o.settings);r.auth=Object.assign(mk().auth,o.auth);return r}
+let S=mk();
+
+const save=()=>{if(!UID)return;try{localStorage.setItem('kaye-u-'+UID,JSON.stringify(S))}catch(e){}};
+const TABS=['tablo','vant','stok','kliyan','det','resi','profil','param','konfig'];
+let tab=TABS.includes(location.hash.slice(1))?location.hash.slice(1):'tablo';
+let cart={};
+const day0=()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime()};
+const sum=(a,b=Infinity)=>S.sales.filter(s=>s.t>=a&&s.t<b&&!s.credit).reduce((x,s)=>x+s.total,0);
+const num=id=>{const v=parseFloat(String($(id).value).replace(',','.'));return isFinite(v)&&v>0?v:0};
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('show'),2000)}
+const cartTotal=()=>Object.entries(cart).reduce((a,[id,q])=>{const p=S.products.find(p=>p.id===id);return a+(p?p.price*q:0)},0);
+
+function vant(){
+ const tiles=S.products.map(p=>{const q=cart[p.id]||0,left=p.qty-q;
+  return `<button class="tile" data-act="add" data-id="${p.id}" ${left<=0?'disabled':''}>${q?`<em class="badge">${q}</em>`:''}<i class="av" style="--h:${hue(p.name)}">${esc(p.name.trim().charAt(0).toUpperCase())}</i><b>${esc(p.name)}</b><span>${fmt(p.price)}</span><span>${left<=0?'Fini':left+' rete'}</span></button>`}).join('');
+ const ct=cartTotal();
+ return `<div class="card"><h2>Vant rapid</h2><div class="row"><input id="qa" inputmode="decimal" placeholder="Montan an gourd"><button class="btn" data-act="quick">Anrejistre</button></div></div>
+ <h2>Pwodwi</h2>${tiles?`<div class="grid">${tiles}</div>`:`<div class="card empty"><b>Pa gen pwodwi ankò</b><span class="mute">Ajoute pwodwi w yo pou vann yo ak yon sèl tap.</span><button class="btn" data-act="go" data-id="stok">Ajoute premye pwodwi a</button></div>`}
+ ${ct?`<div class="card" style="margin-top:12px"><div class="item"><b>Total</b><b>${fmt(ct)}</b></div><div class="col" style="margin-bottom:10px"><input id="cn" list="cl" placeholder="Kliyan (si gen)"><label class="row mute"><input type="checkbox" id="cr"> Kredi: kliyan an ap peye pita</label></div><div class="row"><button class="btn ghost" data-act="clear">Vide</button><button class="btn" style="flex:1" data-act="sell">Anrejistre vant</button></div></div>`:''}`;
+}
+function stok(){
+ return `<div class="card"><h2>Ajoute yon pwodwi</h2><div class="col"><input id="pn" placeholder="Non pwodwi"><div class="row"><input id="pp" inputmode="decimal" placeholder="Pri (G)"><input id="pq" inputmode="numeric" placeholder="Kantite"></div><button class="btn" data-act="addp">Ajoute</button></div></div>
+ <div class="card"><h2>Stok ou</h2>${S.products.length?S.products.map(p=>`<div class="item"><div><b>${esc(p.name)}</b><div class="mute">${fmt(p.price)}${p.qty<=S.settings.low?' <span class="red">Prèske fini</span>':''}</div></div><div class="row"><button class="btn ghost sm" data-act="dec" data-id="${p.id}" aria-label="Retire youn">−</button><b>${p.qty}</b><button class="btn ghost sm" data-act="inc" data-id="${p.id}" aria-label="Ajoute youn">+</button><button class="btn ghost sm" data-act="delp" data-id="${p.id}">Efase</button></div></div>`).join(''):'<div class="mute">Pa gen pwodwi ankò.</div>'}</div>`;
+}
+function det(){
+ const open=S.debts.filter(d=>!d.paid),tot=open.reduce((a,d)=>a+d.amount,0);
+ return `<div class="card"><h2>Nouvo dèt</h2><div class="col"><input id="dn" list="cl" placeholder="Non moun nan"><input id="da" inputmode="decimal" placeholder="Konbyen li dwe (G)"><button class="btn" data-act="addd">Ajoute</button></div></div>
+ <div class="card"><h2>Moun ki dwe w ${open.length?`<span class="red">${fmt(tot)}</span>`:''}</h2>${open.length?open.map(d=>`<div class="item"><div><b>${esc(d.name)}</b><div class="mute">${new Date(d.t).toLocaleDateString('fr-FR')}</div></div><div class="row"><b class="red">${fmt(d.amount)}</b><button class="btn ghost sm" data-act="remind" data-id="${d.id}">Rapèl</button><button class="btn sm" data-act="paid" data-id="${d.id}">Peye</button></div></div>`).join(''):'<div class="mute">Pa gen dèt ouvè. Ajoute youn lè yon kliyan pran sou kredi.</div>'}</div>`;
+}
+function rapo(){
+ const t0=day0(),D=864e5,names=['Dim','Len','Mad','Mèk','Jed','Van','Sam'];
+ const days=[...Array(7)].map((_,i)=>{const s=t0-(6-i)*D;return{l:names[new Date(s+D/2).getDay()],v:sum(s,s+D)}});
+ const mx=Math.max(1,...days.map(d=>d.v));
+ const low=S.products.filter(p=>p.qty<=S.settings.low);
+ const owed=S.debts.filter(d=>!d.paid).reduce((a,d)=>a+d.amount,0);
+ return `<div class="stats"><div class="stat"><span>Vant jodi a</span><b>${fmt(sum(t0))}</b></div><div class="stat"><span>Pwofi jodi a</span><b class="gn">${fmt(psum(t0))}</b></div><div class="stat"><span>Vant 7 jou</span><b>${fmt(sum(t0-6*D))}</b></div><div class="stat"><span>Pwofi 7 jou</span><b class="gn">${fmt(psum(t0-6*D))}</b></div><div class="stat"><span>Vant 30 jou</span><b>${fmt(sum(t0-29*D))}</b></div><div class="stat"><span>Pwofi 30 jou</span><b class="gn">${fmt(psum(t0-29*D))}</b></div><div class="stat warn"><span>Dèt ki rete</span><b>${fmt(owed)}</b></div><div class="stat"><span>Valè stok la</span><b>${fmt(S.products.reduce((a,p)=>a+p.qty*(p.cost||0),0))}</b></div></div>
+ <div class="card"><h2>7 dènye jou</h2><div class="bars">${days.map(d=>`<div><i style="height:${Math.round(d.v/mx*80)}px"></i>${d.l}</div>`).join('')}</div></div>
+ <div class="card"><h2>Prèske fini</h2>${low.length?low.map(p=>`<div class="item"><span>${esc(p.name)}</span><b class="red">${p.qty} rete</b></div>`).join(''):'<div class="mute">Tout pwodwi w yo gen ase stok.</div>'}</div>
+ `;
+}
+const hue=s=>{let h=0;for(const c of s)h=(h*31+c.charCodeAt(0))%360;return h};
+let rid=null,sub='profil',armed=false;
+function applyTheme(){document.documentElement.dataset.theme=S.settings.theme==='dark'?'dark':'light'}
+function addClient(n,ph){n=n.trim();if(!n)return;const c=S.clients.find(x=>x.name.toLowerCase()===n.toLowerCase());if(c){if(ph)c.phone=ph}else S.clients.push({id:uid(),name:n,phone:ph||''})}
+const owedBy=n=>S.debts.filter(d=>!d.paid&&d.name.toLowerCase()===n.toLowerCase()).reduce((a,d)=>a+d.amount,0);
+const dt=t=>new Date(t).toLocaleString('fr-FR',{dateStyle:'short',timeStyle:'short'});
+function rtext(s){const p=S.profile;return [p.shop||'Kaye',p.addr,p.phone,'----------','Resi #'+(s.n||S.sales.indexOf(s)+1)+', '+dt(s.t),...s.items.map(x=>x.qty+' x '+x.name+': '+fmt(x.qty*x.price)),'----------','Total: '+fmt(s.total)+(s.credit?' (kredi)':''),s.client?'Kliyan: '+s.client:'',S.settings.foot].filter(Boolean).join('\n')}
+function tablo(){
+ const last=S.sales.slice(-5).reverse();
+ return menu()+rapo()+`<div class="card"><h2>Dènye vant yo</h2>${last.length?last.map(s=>`<div class="item"><div><b>Resi #${s.n||S.sales.indexOf(s)+1}</b><div class="mute">${dt(s.t)}${s.client?', '+esc(s.client):''}</div></div><div class="row"><b>${fmt(s.total)}</b><button class="btn ghost sm" data-act="rc" data-id="${s.id}">Wè</button></div></div>`).join(''):'<div class="mute">Pa gen vant ankò.</div>'}</div>`;
+}
+function kliyan(){
+ return `<div class="card"><h2>Nouvo kliyan</h2><div class="col"><input id="cnm" placeholder="Non kliyan"><input id="cph" inputmode="tel" placeholder="Telefòn"><button class="btn" data-act="addc">Ajoute</button></div></div>
+ <div class="card"><h2>Kliyan yo</h2>${S.clients.length?S.clients.map(c=>{const o=owedBy(c.name);return `<div class="item"><div class="who"><i class="av" style="--h:${hue(c.name)}">${esc(c.name.trim().charAt(0).toUpperCase())}</i><div><b>${esc(c.name)}</b><div class="mute">${esc(c.phone||'Pa gen telefòn')}</div></div></div><div class="row">${o?`<b class="red">${fmt(o)}</b>`:''}<button class="btn ghost sm" data-act="delc" data-id="${c.id}">Efase</button></div></div>`}).join(''):'<div class="mute">Pa gen kliyan ankò.</div>'}</div>`;
+}
+function resi(){
+ const s=S.sales.find(x=>x.id===rid);if(!s)return tablo();const p=S.profile;
+ return `<div class="card rc"><h2 style="justify-content:center">${esc(p.shop||'Kaye')}</h2><div class="mute" style="text-align:center">${esc(p.addr||'')}${p.addr&&p.phone?', ':''}${esc(p.phone||'')}</div><div class="item"><b>Resi #${s.n||S.sales.indexOf(s)+1}</b><span class="mute">${dt(s.t)}</span></div>${s.items.map(x=>`<div class="item"><span>${x.qty} × ${esc(x.name)}</span><span>${fmt(x.qty*x.price)}</span></div>`).join('')}<div class="item"><b>Total</b><b>${fmt(s.total)}</b></div>${s.client?`<div class="item"><span>Kliyan</span><span>${esc(s.client)}${s.credit?' <b class="red">Kredi</b>':''}</span></div>`:''}<p class="mute" style="text-align:center;margin:10px 0 0">${esc(S.settings.foot)}</p></div>
+ <div class="row"><button class="btn ghost" data-act="back">Retounen</button><button class="btn ghost" data-act="copyr">Kopye</button><button class="btn" style="flex:1" data-act="sharer">Pataje</button></div>`;
+}
+function plis(){
+ const pills=[['profil','Profil'],['param','Paramèt'],['konfig','Konfigirasyon']].map(([k,l])=>`<button class="btn sm ${sub===k?'':'ghost'}" data-act="sub" data-id="${k}">${l}</button>`).join('');
+ const p=S.profile,s=S.settings;let body='';
+ if(sub==='profil')body=`<div class="card"><h2>Profil</h2><div class="row" style="margin-bottom:12px;gap:14px"><button class="avb" data-act="pic" aria-label="Chwazi yon foto" style="width:76px;height:76px;font-size:28px;border-color:var(--line);background:var(--line);color:var(--blue)">${S.profile.photo?`<img src="${S.profile.photo}" alt="">`:esc((S.profile.name||'K')[0].toUpperCase())}</button><div class="col" style="gap:6px"><button class="btn ghost sm" data-act="pic">${S.profile.photo?'Chanje foto a':'Mete yon foto'}</button>${S.profile.photo?'<button class="btn ghost sm" data-act="delpic">Retire foto a</button>':''}</div></div><div class="col"><input id="fn" placeholder="Non ou" value="${esc(p.name)}"><input id="fs" placeholder="Non biznis la" value="${esc(p.shop)}"><input id="fp" inputmode="tel" placeholder="Telefòn" value="${esc(p.phone)}"><input id="fa" placeholder="Adrès" value="${esc(p.addr)}"><button class="btn" data-act="savep">Anrejistre</button></div></div>`;
+ else if(sub==='param')body=`<div class="card"><h2>Paramèt</h2><div class="col"><label class="mute" for="sc">Senbòl lajan</label><input id="sc" maxlength="4" value="${esc(s.cur)}"><label class="mute" for="sl">Alèt lè stok la rive nan</label><input id="sl" inputmode="numeric" value="${s.low}"><label class="mute" for="sf">Mesaj nan fen resi a</label><input id="sf" value="${esc(s.foot)}"><label class="mute" for="st">Aparans</label><select id="st"><option value="auto"${s.theme==='auto'?' selected':''}>Otomatik</option><option value="light"${s.theme==='light'?' selected':''}>Klè</option><option value="dark"${s.theme==='dark'?' selected':''}>Fonse</option></select><button class="btn" data-act="saves">Anrejistre</button></div></div>`;
+ else body=`<div class="card"><h2>Konfigirasyon</h2><p class="mute">Done yo rete sou telefòn sa a sèlman. Kopye yo pou sove yo, epi kole yo anba a pou restore yo.</p><div class="col"><button class="btn ghost" data-act="exp">Kopye done yo</button><textarea id="imp" rows="3" placeholder="Kole done ou te sove yo"></textarea><button class="btn ghost" data-act="imp">Restore</button><button class="btn ghost red" data-act="wipe">${armed?'Klike ankò pou konfime':'Efase tout done'}</button></div></div>`;
+ return `<div class="pills">${pills}</div>`+body;
+}
+const PG={vant:['Vant',`<circle cx='9' cy='20' r='1.5'/><circle cx='18' cy='20' r='1.5'/><path d='M3 4h2l2.4 11h11l2-8H6.2'/>`],stok:['Produits',`<path d='M21 8l-9-5-9 5 9 5 9-5z'/><path d='M3 8v8l9 5 9-5V8'/><path d='M12 13v8'/>`],kliyan:['Kliyan',`<circle cx='9' cy='8' r='3.5'/><path d='M2.5 20c.5-3.5 3.2-5.5 6.5-5.5s6 2 6.5 5.5'/><path d='M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2 .7 3.2 2.5 3.5 5.2'/>`],det:['Dèt',`<rect x='3' y='6' width='18' height='13' rx='2'/><path d='M3 10h18M7 15h4'/>`],resi:['Resi',`<path d='M6 3h12v18l-3-2-3 2-3-2-3 2z'/><path d='M9 8h6M9 12h6'/>`],profil:['Profil',`<circle cx='12' cy='8' r='4'/><path d='M4 21c.6-4 3.8-6 8-6s7.4 2 8 6'/>`],param:['Paramèt',`<path d='M4 7h10M18 7h2M4 17h2M10 17h10'/><circle cx='16' cy='7' r='2'/><circle cx='8' cy='17' r='2'/>`],konfig:['Konfig',`<ellipse cx='12' cy='6' rx='8' ry='3'/><path d='M4 6v6c0 1.7 3.6 3 8 3s8-1.3 8-3V6M4 12v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6'/>`]};
+const TT={vant:'Vant',stok:'Produits',kliyan:'Kliyan',det:'Dèt',resi:'Resi yo',rec:'Resi',profil:'Profil',param:'Paramèt',konfig:'Konfigirasyon'};
+const menu=()=>`<div class='menu'>${Object.keys(PG).map(k=>`<button class='mi' data-act='go' data-id='${k}'><span class='ib'><svg viewBox='0 0 24 24' aria-hidden='true'>${PG[k][1]}</svg></span>${PG[k][0]}</button>`).join('')}</div>`;
+function reslis(){const l=S.sales.slice().reverse();return `<div class="card">${l.length?l.map(s=>`<div class="item"><div><b>Resi #${s.n||S.sales.indexOf(s)+1}</b><div class="mute">${dt(s.t)}${s.client?', '+esc(s.client):''}</div></div><div class="row"><b>${fmt(s.total)}</b><button class="btn ghost sm" data-act="rc" data-id="${s.id}">Wè</button></div></div>`).join(''):'<div class="mute">Pa gen resi ankò.</div>'}</div>`}
+let sq='',vq='',epid=null;
+const psum=(a,b=Infinity)=>S.sales.filter(s=>s.t>=a&&s.t<b&&!s.credit).reduce((x,s)=>x+(s.profit||0),0);
+const cartProfit=()=>Object.entries(cart).reduce((a,[id,q])=>{const p=S.products.find(p=>p.id===id);return a+(p?(p.price-(p.cost||0))*q:0)},0);
+const prow=p=>`<div class='item'><div><b>${esc(p.name)}</b><div class='mute'>Achte ${fmt(p.cost||0)}, vann ${fmt(p.price)}</div><div class='mute'><b class='gn'>Pwofi ${fmt(p.price-(p.cost||0))} pou youn</b>${p.qty<=S.settings.low?` <span class='red'>Prèske fini</span>`:''}</div></div><div class='row'><button class='btn ghost sm' data-act='dec' data-id='${p.id}' aria-label='Retire youn'>−</button><b>${p.qty}</b><button class='btn ghost sm' data-act='inc' data-id='${p.id}' aria-label='Ajoute youn'>+</button></div><div class='row' style='width:100%'><button class='btn ghost sm' data-act='edp' data-id='${p.id}'>Modifye</button><button class='btn ghost sm red' data-act='delp' data-id='${p.id}'>Efase</button></div></div>`;
+const editRow=p=>`<div class='item'><div class='col' style='width:100%'><div class='mute'>Non, pri ou achte l, pri ou vann li</div><input id='en' value='${esc(p.name)}'><div class='row'><input id='ec' inputmode='decimal' value='${p.cost||0}'><input id='ep' inputmode='decimal' value='${p.price}'></div><div class='row'><button class='btn sm' data-act='svp' data-id='${p.id}'>Anrejistre</button><button class='btn ghost sm' data-act='cnl'>Anile</button></div></div></div>`;
+function stok2(){
+ const q=sq.toLowerCase(),L=S.products.filter(p=>p.name.toLowerCase().includes(q)),val=S.products.reduce((a,p)=>a+p.qty*(p.cost||0),0);
+ return `<div class='card'><h2>Ajoute yon pwodwi</h2><div class='col'><input id='pn' placeholder='Non pwodwi'><div class='row'><input id='pc' inputmode='decimal' placeholder='Pri ou achte l (HT)'><input id='pp' inputmode='decimal' placeholder='Pri ou vann li'></div><input id='pq' inputmode='numeric' placeholder='Kantite nan stok'><button class='btn' data-act='addp'>Ajoute</button></div></div>
+ <div class='card'><h2>Tout pwodwi yo (${S.products.length})</h2><input id='sk' placeholder='Chèche yon pwodwi' value='${esc(sq)}' style='margin-bottom:8px'>${L.length?L.map(p=>epid===p.id?editRow(p):prow(p)).join(''):`<div class='mute'>Pa gen pwodwi.</div>`}<div class='mute' style='margin-top:10px'>Valè stok la (pri ou achte yo): ${fmt(val)}</div></div>`;
+}
+function vant2(){
+ const q=vq.toLowerCase(),L=S.products.filter(p=>p.name.toLowerCase().includes(q)).slice(0,8),ct=cartTotal();
+ const res=L.map(p=>{const l=p.qty-(cart[p.id]||0);return `<button class='pick' data-act='add' data-id='${p.id}' ${l<=0?'disabled':''}><span><b>${esc(p.name)}</b><span class='mute'>${fmt(p.price)}, ${l<=0?'Fini':l+' rete'}</span></span><span class='btn sm'>+ Ajoute</span></button>`}).join('');
+ const lines=Object.entries(cart).map(([id,qn])=>{const p=S.products.find(x=>x.id===id);return p?`<div class='item'><div><b>${esc(p.name)}</b><div class='mute'>${fmt(p.price)} × ${qn} = ${fmt(p.price*qn)}</div><div class='mute gn'>Pwofi ${fmt((p.price-(p.cost||0))*qn)}</div></div><div class='row'><button class='btn ghost sm' data-act='cm' data-id='${id}' aria-label='Retire youn'>−</button><input class='qn' data-id='${id}' inputmode='numeric' value='${qn}' aria-label='Kantite'><button class='btn ghost sm' data-act='add' data-id='${id}' aria-label='Ajoute youn'>+</button></div></div>`:''}).join('');
+ return `<div class='card'><h2>Chèche yon pwodwi</h2><input id='vs' placeholder='Tape non pwodwi a' value='${esc(vq)}' style='margin-bottom:10px'>${S.products.length?(res||`<div class='mute'>Pa gen pwodwi ki matche.</div>`):`<div class='mute'>Ou poko gen pwodwi.</div><p><button class='btn' data-act='go' data-id='stok'>Ajoute pwodwi</button></p>`}</div>`+(ct?`<div class='card'><h2>Vant lan</h2>${lines}<div class='item'><b>Total</b><b>${fmt(ct)}</b></div><div class='item'><b class='gn'>Pwofi ou</b><b class='gn'>${fmt(cartProfit())}</b></div><div class='col' style='margin:8px 0 10px'><input id='cn' list='cl' placeholder='Kliyan (si gen)'><label class='row mute'><input type='checkbox' id='cr'> Kredi: kliyan an ap peye pita</label></div><div class='row'><button class='btn ghost' data-act='clear'>Vide</button><button class='btn' style='flex:1' data-act='sell'>Anrejistre vant</button></div></div>`:'');
+}
+let UID=null,authReady=false,am='login',pendingShop='';
+const lerr=m=>{toast(m);const e=$('#lerr');if(e)e.textContent=m};
+function aerr(e){const c=(e&&e.code)||'';return {'auth/invalid-email':'Imèl la pa bon','auth/email-already-in-use':'Imèl sa a deja gen yon kont','auth/weak-password':'Mo pas la twò kout (6 karaktè omwen)','auth/invalid-credential':'Imèl oswa mo pas la pa bon. Si ou poko gen kont, tape "Kreye yon kont".','auth/wrong-password':'Imèl oswa mo pas la pa bon','auth/user-not-found':'Imèl oswa mo pas la pa bon','auth/network-request-failed':'Pa gen entènèt','auth/too-many-requests':'Twòp esè. Eseye pita','auth/operation-not-allowed':'Email/Password poko aktive nan Firebase','auth/unauthorized-domain':'Domèn sit la poko ajoute nan Firebase'}[c]||'Gen yon pwoblèm ('+c+')'}
+function loadFor(uid){UID=uid;let r=null;try{r=localStorage.getItem('kaye-u-'+uid);if(!r&&!localStorage.getItem('kaye-claimed')){r=localStorage.getItem('kaye-v2')||localStorage.getItem('kaye-v1');if(r)localStorage.setItem('kaye-claimed',uid)}}catch(e){}
+ try{S=norm(r?JSON.parse(r):null)}catch(e){S=mk()}}
+window.onAuth=(u,failed)=>{authReady=true;
+ if(u){loadFor(u.uid);S.auth={email:u.email,in:true};if(pendingShop){S.profile.shop=pendingShop;pendingShop=''}else if(!S.profile.shop&&u.displayName)S.profile.shop=u.displayName;try{localStorage.setItem('kaye-last',JSON.stringify({uid:u.uid,email:u.email}))}catch(e){}tab='tablo';save()}
+ else if(failed){let l=null;try{l=JSON.parse(localStorage.getItem('kaye-last'))}catch(e){}if(l&&l.uid){loadFor(l.uid);S.auth={email:l.email,in:true}}}
+ else{UID=null;S=mk();try{localStorage.removeItem('kaye-last')}catch(e){}}
+ render();if(u)checkSub()};
+setTimeout(()=>{if(!authReady)window.onAuth(undefined,true)},7000);
+let chk=false;
+const subOk=()=>{const u=S.sub&&S.sub.until;if(!u)return false;const t=new Date(u+'T23:59:59').getTime();return t+7*864e5>=Date.now()};
+function lockUI(){const need=S.auth.in&&!subOk();let el=$('#lk');if(!need){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='lk';document.body.appendChild(el)}
+ const em=S.auth.email||'',ex=S.sub&&S.sub.until;
+ el.innerHTML=chk?`<div class='lc'><p class='mute'>Verifikasyon abònman an…</p></div>`:`<div class='lc'><h2>${ex?'Abònman an fini':'Abònman an pa aktif'}</h2><p class='mute'>Imèl ou: <b>${esc(em)}</b></p><p>Abònman an koute <b>250 G chak mwa</b>. Voye lajan an sou youn nan nimewo sa yo:</p><div class='item'><span>MonCash</span><b>3122 1284</b></div><div class='item'><span>NatCash</span><b>3353 5433</b></div><p class='mute'>Apre ou fin peye, voye imèl ou ak prèv peman an. Nou aktive kont ou, epi ou tape bouton anba a.</p><div class='col'><a class='btn' style='text-align:center;text-decoration:none' target='_blank' rel='noopener' href='https://wa.me/50931221284?text=${encodeURIComponent('Bonjou, mwen peye abònman Kaye. Imèl mwen: '+em)}'>Voye prèv sou WhatsApp</a><button class='btn ghost' data-act='recheck'>Mwen peye, verifye ankò</button><button class='btn ghost sm' data-act='exp'>Kopye done m yo</button><button class='btn ghost sm' data-act='out'>Dekonekte</button></div></div>`}
+async function checkSub(manual){
+ if(!window.FB||!FB.getSub||!S.auth.email){if(manual)toast('Pa gen entènèt');return}
+ if(!subOk()){chk=true;render()}
+ try{const d=await FB.getSub(S.auth.email);S.sub={until:d&&d.until?String(d.until):'',checked:Date.now()};save();if(manual)toast(subOk()?'Abònman an aktif':'Abònman an poko aktif')}
+ catch(e){if(manual)toast(e&&e.code==='permission-denied'?'Règ Firestore yo pa bon':'Pa ka verifye. Tcheke entènèt ou.')}
+ chk=false;render()}
+window.addEventListener('online',()=>{if(S.auth.in)checkSub()});
+function loginUI(){const need=!S.auth.in;let el=$('#lg');if(!need){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='lg';document.body.appendChild(el)}
+ const t=am==='reg'?'Kreye kont ou':am==='reset'?'Mo pas bliye':'Konekte',act=am==='reg'?'reg':am==='reset'?'reset':'login';
+ el.innerHTML=`<div class='lc'><div class='row' style='margin-bottom:18px'><span class='dlogo' style='border-color:#1257D6;color:#1257D6'>K</span><b style='font-size:20px'>Kaye</b></div>${!authReady?`<p class='mute'>Chajman…</p>`:`<h2>${t}</h2><div class='col'>${am==='reg'?`<input id='rs' placeholder='Non biznis la' autocomplete='organization'>`:''}<input id='em' type='email' inputmode='email' placeholder='Imèl' autocomplete='email'>${am==='reset'?'':`<input id='pw' type='password' placeholder='Mo pas (6 karaktè omwen)' autocomplete='${am==='reg'?'new-password':'current-password'}'>`}<button class='btn' data-act='${act}'>${t}</button><p id='lerr' class='red' style='min-height:20px;margin:0;font-size:14px'></p></div><div class='col' style='margin-top:12px;gap:6px'>${am!=='login'?`<button class='btn ghost sm' data-act='amode' data-id='login'>Mwen deja gen yon kont</button>`:`<button class='btn ghost sm' data-act='amode' data-id='reg'>Kreye yon kont</button><button class='btn ghost sm' data-act='amode' data-id='reset'>Mo pas bliye?</button>`}</div>`}</div>`}
+function render(){
+ loginUI();lockUI();applyTheme();$('#brand').textContent=S.profile.shop||'Kaye';
+ const P0=S.profile,pi0=P0.photo?`<img src='${P0.photo}' alt=''>`:esc((P0.name||P0.shop||'K')[0].toUpperCase());
+ $('#avb').innerHTML=pi0;$('#pft').textContent='Pwofi jodi a: '+fmt(psum(day0()));$('#who').innerHTML=`<span class='pi'>${pi0}</span><span>${esc(P0.shop||P0.name||'Kaye')}${S.auth.email?', '+esc(S.auth.email):''}</span>`;
+ const dn=new Date();$('#dnow').textContent=['Dimanch','Lendi','Madi','Mèkredi','Jedi','Vandredi','Samdi'][dn.getDay()]+' '+dn.getDate()+' '+['janvye','fevriye','mas','avril','me','jen','jiyè','out','septanm','oktòb','novanm','desanm'][dn.getMonth()];
+ $('#cl').innerHTML=S.clients.map(c=>`<option value="${esc(c.name)}">`).join('');
+ $('#today').textContent=fmt(sum(day0()));
+ document.querySelector('.top').classList.toggle('mini',tab!=='tablo');
+ const V={tablo,vant:vant2,stok:stok2,kliyan,det,resi:reslis,rec:resi,profil:()=>{sub='profil';return plis()},param:()=>{sub='param';return plis()},konfig:()=>{sub='konfig';return plis()}};
+ $('#app').innerHTML=(tab==='tablo'?'':`<div class="pt"><button class="back" data-act="go" data-id="tablo" aria-label="Retounen">‹</button><h1>${TT[tab]||''}</h1></div>`)+(V[tab]||tablo)();
+ const L={tablo:'Dashboard',profil:'Profil',stok:'Produits',vant:'Vant',kliyan:'Kliyan',det:'Dèt',resi:'Resi',param:'Paramèt',konfig:'Konfigirasyon'},nm=S.profile.shop||'Kaye';
+ $('nav').innerHTML=`<div class='dbrand'><span class='dlogo'>${esc(nm[0].toUpperCase())}</span><span>${esc(nm.toUpperCase())}</span></div>`+['tablo','profil','stok','vant','kliyan','det','resi','param','konfig'].map(k=>`<button data-tab='${k}'><svg viewBox='0 0 24 24' aria-hidden='true'>${k==='tablo'?"<path d='M3 11l9-8 9 8'/><path d='M5 10v10h5v-6h4v6h5V10'/>":PG[k][1]}</svg>${L[k]}</button>`).join('')+`<button class='lo' data-act='out'><svg viewBox='0 0 24 24' aria-hidden='true'><path d='M14 4h5v16h-5M3 12h11M10 8l4 4-4 4'/></svg>Dekonekte</button>`;
+ if(!$('#ov'))document.body.insertAdjacentHTML('beforeend',"<div class='ov' id='ov'></div>");
+ document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.tab===(tab==='rec'?'resi':tab)));
+}
+document.addEventListener('click',async e=>{
+ const tb=e.target.closest('nav button[data-tab]');
+ if(e.target.closest('#hb')){document.body.classList.toggle('dopen');return}
+ if(e.target.id==='ov'){document.body.classList.remove('dopen');return}
+ if(tb){tab=tb.dataset.tab;document.body.classList.remove('dopen');render();window.scrollTo(0,0);return}
+ const b=e.target.closest('[data-act]');if(!b)return;
+ const a=b.dataset.act,id=b.dataset.id,p=S.products.find(x=>x.id===id);
+ if(a==='add'&&p){if((cart[id]||0)<p.qty)cart[id]=(cart[id]||0)+1}
+ else if(a==='clear')cart={};
+ else if(a==='sell'){
+  const items=[];
+  for(const [i,q] of Object.entries(cart)){const pr=S.products.find(x=>x.id===i);if(pr){pr.qty=Math.max(0,pr.qty-q);items.push({name:pr.name,qty:q,price:pr.price,cost:pr.cost||0})}}
+  if(items.length){const cn=$('#cn')?$('#cn').value.trim():'',cr=!!(cn&&$('#cr').checked),total=items.reduce((s,i)=>s+i.qty*i.price,0);
+   const sl={id:uid(),n:S.sales.length+1,t:Date.now(),total,items,client:cn,credit:cr,profit:items.reduce((s,i)=>s+i.qty*(i.price-i.cost),0)};S.sales.push(sl);
+   if(cn)addClient(cn);if(cr)S.debts.push({id:uid(),name:cn,amount:total,t:sl.t,paid:false,sid:sl.id});
+   rid=sl.id;tab='rec';window.scrollTo(0,0);toast('Vant anrejistre')}
+  cart={};
+ }
+ else if(a==='quick'){
+  const v=num('#qa');if(!v){toast('Antre yon montan');return}
+  S.sales.push({id:uid(),t:Date.now(),total:v,items:[{name:'Vant rapid',qty:1,price:v}]});toast('Vant anrejistre');
+ }
+ else if(a==='addp'){
+  const n=$('#pn').value.trim(),pr=num('#pp'),q=parseInt($('#pq').value,10)||0;
+  if(!n||!pr){toast('Mete non ak pri');return}
+  S.products.push({id:uid(),name:n,price:pr,cost:num('#pc'),qty:q});toast('Pwodwi ajoute');
+ }
+ else if(a==='rc'){rid=id;tab='rec';window.scrollTo(0,0)}
+ else if(a==='go'){tab=id;window.scrollTo(0,0)}
+ else if(a==='amode'){am=id;loginUI();return}
+ else if(a==='reg'||a==='login'||a==='reset'){
+  if(!window.FB){lerr('Pa gen entènèt. Eseye ankò.');return}
+  const em=$('#em').value.trim(),pw=$('#pw')?$('#pw').value:'',shop=$('#rs')?$('#rs').value.trim():'';
+  if(!em){lerr('Mete imèl ou');return}
+  if(a==='reg'&&!shop){lerr('Mete non biznis la');return}
+  if(a!=='reset'&&!pw){lerr('Mete mo pas la');return}
+  if(a==='reg'&&pw.length<6){lerr('Mo pas la dwe gen 6 karaktè omwen');return}
+  b.disabled=true;if(a==='reg')pendingShop=shop;
+  try{
+   if(a==='reg'){const c=await FB.createUserWithEmailAndPassword(FB.auth,em,pw);try{await FB.updateProfile(c.user,{displayName:shop})}catch(e){}}
+   else if(a==='login')await FB.signInWithEmailAndPassword(FB.auth,em,pw);
+   else{await FB.sendPasswordResetEmail(FB.auth,em);toast('Nou voye yon imèl pou chanje mo pas la');am='login';loginUI()}
+  }catch(err){pendingShop='';lerr(aerr(err))}
+  b.disabled=false;return}
+ else if(a==='recheck'){await checkSub(true);return}
+ else if(a==='out'){document.body.classList.remove('dopen');try{if(window.FB)await FB.signOut(FB.auth);else window.onAuth(null)}catch(e){window.onAuth(null)}return}
+ else if(a==='pic'){$('#pf').click();return}
+ else if(a==='delpic'){S.profile.photo='';toast('Foto retire')}
+ else if(a==='edp')epid=id;
+ else if(a==='cnl')epid=null;
+ else if(a==='svp'&&p){const n=$('#en').value.trim();if(n)p.name=n;p.cost=parseFloat(String($('#ec').value).replace(',','.'))||0;p.price=num('#ep')||p.price;epid=null;toast('Anrejistre')}
+ else if(a==='cm'){if(cart[id]>1)cart[id]--;else delete cart[id]}
+ else if(a==='back')tab='vant';
+ else if(a==='sub'){sub=id;armed=false}
+ else if(a==='addc'){const n=$('#cnm').value.trim();if(!n){toast('Mete non kliyan');return}addClient(n,$('#cph').value.trim());toast('Kliyan ajoute')}
+ else if(a==='delc')S.clients=S.clients.filter(x=>x.id!==id);
+ else if(a==='savep'){Object.assign(S.profile,{name:$('#fn').value.trim(),shop:$('#fs').value.trim(),phone:$('#fp').value.trim(),addr:$('#fa').value.trim()});toast('Profil anrejistre')}
+ else if(a==='saves'){S.settings={cur:$('#sc').value.trim()||'G',low:Math.max(0,parseInt($('#sl').value,10)||0),foot:$('#sf').value.trim(),theme:$('#st').value};toast('Paramèt anrejistre')}
+ else if(a==='copyr'||a==='sharer'){const s=S.sales.find(x=>x.id===rid);if(!s)return;const m=rtext(s);
+  if(a==='sharer'&&navigator.share){navigator.share({text:m}).catch(()=>{})}else{try{navigator.clipboard.writeText(m).then(()=>toast('Resi kopye'),()=>toast('Pa ka kopye'))}catch(err){toast('Pa ka kopye')}}
+  return}
+ else if(a==='exp'){try{navigator.clipboard.writeText(JSON.stringify(S)).then(()=>toast('Done yo kopye'),()=>toast('Pa ka kopye'))}catch(err){toast('Pa ka kopye')}return}
+ else if(a==='imp'){try{const au=S.auth,su=S.sub;S=norm(JSON.parse($('#imp').value));S.auth=au;S.sub=su;toast('Done yo restore')}catch(err){toast('Done yo pa bon');return}}
+ else if(a==='wipe'){if(!armed){armed=true;clearTimeout(window._wh);window._wh=setTimeout(()=>{armed=false;if(tab==='plis')render()},4000)}else{const au=S.auth,pr=S.profile,su=S.sub;S=mk();S.auth=au;S.profile=pr;S.sub=su;cart={};armed=false;toast('Tout done efase')}}
+ else if(a==='inc'&&p)p.qty++;
+ else if(a==='dec'&&p)p.qty=Math.max(0,p.qty-1);
+ else if(a==='delp'){S.products=S.products.filter(x=>x.id!==id);delete cart[id];toast('Pwodwi efase')}
+ else if(a==='addd'){
+  const n=$('#dn').value.trim(),v=num('#da');
+  if(!n||!v){toast('Mete non ak montan');return}
+  addClient(n);S.debts.push({id:uid(),name:n,amount:v,t:Date.now(),paid:false});toast('Dèt ajoute');
+ }
+ else if(a==='paid'){
+  const d=S.debts.find(x=>x.id===id);
+  if(d){d.paid=true;S.sales.push({id:uid(),t:Date.now(),total:d.amount,profit:((S.sales.find(x=>x.id===d.sid)||{}).profit)||0,items:[{name:'Peman dèt '+d.name,qty:1,price:d.amount}]});toast('Dèt peye')}
+ }
+ else if(a==='remind'){
+  const d=S.debts.find(x=>x.id===id);
+  if(d){const m='Bonjou '+d.name+', se yon ti rapèl: ou dwe m '+fmt(d.amount)+'. Mèsi!';
+   try{navigator.clipboard.writeText(m).then(()=>toast('Mesaj la kopye'),()=>toast(m))}catch(err){toast(m)}}
+  return;
+ }
+ save();render();
+});
+document.addEventListener('input',e=>{const t=e.target;if(t.id!=='sk'&&t.id!=='vs')return;if(t.id==='sk')sq=t.value;else vq=t.value;render();const n=$('#'+t.id);if(n){n.focus();const l=n.value.length;n.setSelectionRange(l,l)}});
+document.addEventListener('change',e=>{const t=e.target;if(t.classList.contains('qn')){const p=S.products.find(x=>x.id===t.dataset.id);if(p){const v=Math.min(p.qty,parseInt(t.value,10)||0);if(v>0)cart[p.id]=v;else delete cart[p.id];render()}}});
+$('#pf').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas'),s=Math.min(im.width,im.height);c.width=c.height=256;c.getContext('2d').drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,256,256);S.profile.photo=c.toDataURL('image/jpeg',.82);save();render();toast('Foto anrejistre')};im.onerror=()=>toast('Foto a pa bon');im.src=r.result};r.readAsDataURL(f);e.target.value=''});
+render();
+</script>
+<script type="module">
+try{
+ const [A,B,C]=await Promise.all([import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js'),import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js'),import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js')]);
+ const app=A.initializeApp({apiKey:"AIzaSyA_iyCK2g7ad7LRh2dUlyWOnEQiBeEc9_s",authDomain:"kaye-paw-web.firebaseapp.com",projectId:"kaye-paw-web",storageBucket:"kaye-paw-web.firebasestorage.app",messagingSenderId:"1034029650937",appId:"1:1034029650937:web:2b9f10b1ea24d03397a328"});
+ const auth=B.getAuth(app),db=C.getFirestore(app);
+ window.FB={auth,createUserWithEmailAndPassword:B.createUserWithEmailAndPassword,signInWithEmailAndPassword:B.signInWithEmailAndPassword,signOut:B.signOut,sendPasswordResetEmail:B.sendPasswordResetEmail,updateProfile:B.updateProfile,getSub:async em=>{const d=await C.getDoc(C.doc(db,'subscribers',em.toLowerCase()));return d.exists()?d.data():null}};
+ B.onAuthStateChanged(auth,u=>window.onAuth(u));
+}catch(e){window.onAuth(undefined,true)}
+</script>
+</body>
+</html>
