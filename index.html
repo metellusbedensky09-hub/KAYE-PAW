@@ -155,6 +155,7 @@ nav .lo{margin-top:auto}
 .qn{width:56px;text-align:center;padding:8px 4px}
 #toast{z-index:200}
 #lk{position:fixed;inset:0;z-index:90;background:#0F172A;display:grid;place-items:center;padding:20px;overflow-y:auto}
+#cd{position:fixed;inset:0;z-index:95;background:#0F172A;display:grid;place-items:center;padding:20px;overflow-y:auto}
 </style>
 </head>
 <body>
@@ -296,11 +297,17 @@ async function checkSub(manual){
  catch(e){subMsg=e&&e.code==='permission-denied'?'Règ Firestore yo pa bon (permission-denied).':'Pa ka verifye: '+((e&&e.code)||'erè rezo');if(manual)toast(subMsg)}
  chk=false;render()}
 window.addEventListener('online',()=>{if(S.auth.in)checkSub()});
+const IN_APP=/KayeApp/.test(navigator.userAgent);
+let unlocked=false,cdErr='',wipeArm=false;
+async function hc(c,s){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s+':'+c));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+function codeUI(){const need=IN_APP&&S.auth.in&&subOk()&&(!unlocked||!S.code);let el=$('#cd');if(!need){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='cd';document.body.appendChild(el)}
+ const er=`<p class='red' style='min-height:20px;margin:0;font-size:14px'>${esc(cdErr)}</p>`;
+ el.innerHTML=!S.code?`<div class='lc'><h2>Kreye kòd lokal ou</h2><p class='mute'>Kòd sa a pwoteje app la sou telefòn sa a, menm san entènèt. <b>Chwazi yon kòd ou ka sonje.</b> Nou pa ka chanje l ni rekipere l pou ou.</p><div class='col'><input id='c1' type='password' placeholder='Kòd (4 karaktè omwen)' autocomplete='new-password'><input id='c2' type='password' placeholder='Repete kòd la' autocomplete='new-password'><button class='btn' data-act='csave'>Sove kòd la</button>${er}</div></div>`:`<div class='lc'><h2>Antre kòd ou</h2><div class='col'><input id='c1' type='password' placeholder='Kòd ou' autocomplete='current-password'><button class='btn' data-act='copen'>Louvri</button>${er}<button class='btn ghost sm' data-act='cforget'>${wipeArm?'Klike ankò: sa ap efase done lokal yo':'Mwen bliye kòd la'}</button></div></div>`}
 function loginUI(){const need=!S.auth.in;let el=$('#lg');if(!need){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='lg';document.body.appendChild(el)}
  const t=am==='reg'?'Kreye kont ou':am==='reset'?'Mo pas bliye':'Konekte',act=am==='reg'?'reg':am==='reset'?'reset':'login';
  el.innerHTML=`<div class='lc'><div class='row' style='margin-bottom:18px'><span class='dlogo' style='border-color:#1257D6;color:#1257D6'>K</span><b style='font-size:20px'>Kaye</b></div>${!authReady?`<p class='mute'>Chajman…</p>`:`<h2>${t}</h2><div class='col'>${am==='reg'?`<input id='rs' placeholder='Non biznis la' autocomplete='organization'>`:''}<input id='em' type='email' inputmode='email' placeholder='Imèl' autocomplete='email'>${am==='reset'?'':`<input id='pw' type='password' placeholder='Mo pas (6 karaktè omwen)' autocomplete='${am==='reg'?'new-password':'current-password'}'>`}<button class='btn' data-act='${act}'>${t}</button><p id='lerr' class='red' style='min-height:20px;margin:0;font-size:14px'></p></div><div class='col' style='margin-top:12px;gap:6px'>${am!=='login'?`<button class='btn ghost sm' data-act='amode' data-id='login'>Mwen deja gen yon kont</button>`:`<button class='btn ghost sm' data-act='amode' data-id='reg'>Kreye yon kont</button><button class='btn ghost sm' data-act='amode' data-id='reset'>Mo pas bliye?</button>`}</div>`}</div>`}
 function render(){
- loginUI();lockUI();applyTheme();$('#brand').textContent=S.profile.shop||'Kaye';
+ loginUI();lockUI();codeUI();applyTheme();$('#brand').textContent=S.profile.shop||'Kaye';
  const P0=S.profile,pi0=P0.photo?`<img src='${P0.photo}' alt=''>`:esc((P0.name||P0.shop||'K')[0].toUpperCase());
  $('#avb').innerHTML=pi0;$('#pft').textContent='Pwofi jodi a: '+fmt(psum(day0()));$('#who').innerHTML=`<span class='pi'>${pi0}</span><span>${esc(P0.shop||P0.name||'Kaye')}${S.auth.email?', '+esc(S.auth.email):''}</span>`;
  const dn=new Date();$('#dnow').textContent=['Dimanch','Lendi','Madi','Mèkredi','Jedi','Vandredi','Samdi'][dn.getDay()]+' '+dn.getDate()+' '+['janvye','fevriye','mas','avril','me','jen','jiyè','out','septanm','oktòb','novanm','desanm'][dn.getMonth()];
@@ -351,15 +358,18 @@ document.addEventListener('click',async e=>{
   if(a==='reg'&&!shop){lerr('Mete non biznis la');return}
   if(a!=='reset'&&!pw){lerr('Mete mo pas la');return}
   if(a==='reg'&&pw.length<6){lerr('Mo pas la dwe gen 6 karaktè omwen');return}
-  b.disabled=true;if(a==='reg')pendingShop=shop;
+  b.disabled=true;if(a==='reg')pendingShop=shop;if(a!=='reset')unlocked=true;
   try{
    if(a==='reg'){const c=await FB.createUserWithEmailAndPassword(FB.auth,em,pw);try{await FB.updateProfile(c.user,{displayName:shop})}catch(e){}}
    else if(a==='login')await FB.signInWithEmailAndPassword(FB.auth,em,pw);
    else{await FB.sendPasswordResetEmail(FB.auth,em);toast('Nou voye yon imèl pou chanje mo pas la');am='login';loginUI()}
-  }catch(err){pendingShop='';lerr(aerr(err))}
+  }catch(err){pendingShop='';unlocked=false;lerr(aerr(err))}
   b.disabled=false;return}
+ else if(a==='csave'){const c1=$('#c1').value,c2=$('#c2').value;if(c1.length<4){cdErr='Kòd la dwe gen 4 karaktè omwen';codeUI();return}if(c1!==c2){cdErr='De kòd yo pa menm';codeUI();return}const salt=uid()+uid();S.code={salt,h:await hc(c1,salt)};unlocked=true;cdErr=''}
+ else if(a==='copen'){const ok=(await hc($('#c1').value,S.code.salt))===S.code.h;if(ok){unlocked=true;cdErr=''}else{cdErr='Kòd la pa bon';codeUI();return}}
+ else if(a==='cforget'){if(!wipeArm){wipeArm=true;clearTimeout(window._cw);window._cw=setTimeout(()=>{wipeArm=false;codeUI()},5000);codeUI();return}wipeArm=false;try{localStorage.removeItem('kaye-u-'+UID)}catch(e){}const au=S.auth,su=S.sub;S=mk();S.auth=au;S.sub=su;unlocked=false;cdErr='';toast('Done lokal yo efase')}
  else if(a==='recheck'){await checkSub(true);return}
- else if(a==='out'){document.body.classList.remove('dopen');try{if(window.FB)await FB.signOut(FB.auth);else window.onAuth(null)}catch(e){window.onAuth(null)}return}
+ else if(a==='out'){unlocked=false;document.body.classList.remove('dopen');try{if(window.FB)await FB.signOut(FB.auth);else window.onAuth(null)}catch(e){window.onAuth(null)}return}
  else if(a==='pic'){$('#pf').click();return}
  else if(a==='delpic'){S.profile.photo='';toast('Foto retire')}
  else if(a==='edp')epid=id;
@@ -376,8 +386,8 @@ document.addEventListener('click',async e=>{
   if(a==='sharer'&&navigator.share){navigator.share({text:m}).catch(()=>{})}else{try{navigator.clipboard.writeText(m).then(()=>toast('Resi kopye'),()=>toast('Pa ka kopye'))}catch(err){toast('Pa ka kopye')}}
   return}
  else if(a==='exp'){try{navigator.clipboard.writeText(JSON.stringify(S)).then(()=>toast('Done yo kopye'),()=>toast('Pa ka kopye'))}catch(err){toast('Pa ka kopye')}return}
- else if(a==='imp'){try{const au=S.auth,su=S.sub;S=norm(JSON.parse($('#imp').value));S.auth=au;S.sub=su;toast('Done yo restore')}catch(err){toast('Done yo pa bon');return}}
- else if(a==='wipe'){if(!armed){armed=true;clearTimeout(window._wh);window._wh=setTimeout(()=>{armed=false;if(tab==='plis')render()},4000)}else{const au=S.auth,pr=S.profile,su=S.sub;S=mk();S.auth=au;S.profile=pr;S.sub=su;cart={};armed=false;toast('Tout done efase')}}
+ else if(a==='imp'){try{const au=S.auth,su=S.sub,cd=S.code;S=norm(JSON.parse($('#imp').value));S.auth=au;S.sub=su;S.code=cd;toast('Done yo restore')}catch(err){toast('Done yo pa bon');return}}
+ else if(a==='wipe'){if(!armed){armed=true;clearTimeout(window._wh);window._wh=setTimeout(()=>{armed=false;if(tab==='plis')render()},4000)}else{const au=S.auth,pr=S.profile,su=S.sub,cd=S.code;S=mk();S.auth=au;S.profile=pr;S.sub=su;S.code=cd;cart={};armed=false;toast('Tout done efase')}}
  else if(a==='inc'&&p)p.qty++;
  else if(a==='dec'&&p)p.qty=Math.max(0,p.qty-1);
  else if(a==='delp'){S.products=S.products.filter(x=>x.id!==id);delete cart[id];toast('Pwodwi efase')}
@@ -401,6 +411,7 @@ document.addEventListener('click',async e=>{
 document.addEventListener('input',e=>{const t=e.target;if(t.id!=='sk'&&t.id!=='vs')return;if(t.id==='sk')sq=t.value;else vq=t.value;render();const n=$('#'+t.id);if(n){n.focus();const l=n.value.length;n.setSelectionRange(l,l)}});
 document.addEventListener('change',e=>{const t=e.target;if(t.classList.contains('qn')){const p=S.products.find(x=>x.id===t.dataset.id);if(p){const v=Math.min(p.qty,parseInt(t.value,10)||0);if(v>0)cart[p.id]=v;else delete cart[p.id];render()}}});
 $('#pf').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas'),s=Math.min(im.width,im.height);c.width=c.height=256;c.getContext('2d').drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,256,256);S.profile.photo=c.toDataURL('image/jpeg',.82);save();render();toast('Foto anrejistre')};im.onerror=()=>toast('Foto a pa bon');im.src=r.result};r.readAsDataURL(f);e.target.value=''});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 render();
 </script>
 <script type="module">
